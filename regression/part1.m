@@ -5,14 +5,17 @@ clear
 data = load('airfoil_self_noise.dat');
 
 % split data
-dim = size(data);
-trn_end = round(0.6 * dim(1));
-val_end = trn_end + round(0.2 * dim(1));
 
-data_trn = data(1:trn_end,:);
-data_val = data(trn_end + 1:val_end,:);
-data_test = data(val_end + 1:end,:);
+% manually split data 
+% dim = size(data);
+% trn_end = round(0.6 * dim(1));
+% val_end = trn_end + round(0.2 * dim(1));
+% 
+% data_trn = data(1:trn_end,:);
+% data_val = data(trn_end + 1:val_end,:);
+% data_test = data(val_end + 1:end,:);
 
+% better spit with implemented function split_data
 [data_trn, data_val, data_test] = split_scale(data, 1);
  
 y_real = data_test(:, 6);
