@@ -41,9 +41,6 @@ SSres = zeros(4,1);
 NDEI = zeros(4,1);
 
 for i = 1:4
-    if i == 4
-        break
-    end
     tic
     % train 
     options = anfisOptions('InitialFIS', model(i), 'EpochNumber', 100, 'DisplayANFISInformation', 0, 'DisplayErrorValues', 0, 'ValidationData', data_val);
@@ -86,11 +83,11 @@ for i = 1:4
     % plot training and validation error
     figure(2)
     hold on 
-    iter = 1:length(trainError);
-    plot(iter, trainError);
-    plot(iter, testError);
+    epochs = 1:length(trainError);
+    plot(epochs, trainError);
+    plot(epochs, testError);
     title(['Learning curves for model ' num2str(i)]) 
-    xlabel('iterations')
+    xlabel('epochs')
     ylabel('MSE')
     legend('MSE for Training data','MSE for Testing data')
     hold off 
