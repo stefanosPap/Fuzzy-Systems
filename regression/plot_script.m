@@ -30,7 +30,9 @@ ylabel('MSE')
 legend('MSE for Training data','MSE for Testing data')
 hold off 
 
+figure
 % plot real and predicted values 
+hold on 
 samples_length = 1:length(data_test);
 plot(samples_length, y_predicted);
 plot(samples_length, y_real);
@@ -38,7 +40,9 @@ xlabel('sample')
 ylabel('value')
 title('Predicted and real values') 
 legend('real value','predicted value')
+hold off 
 
+figure
 % plot initial membership functions
 for j = 1:5
     [x,mf] = plotmf(sugeno_fis,'input',j);
@@ -49,6 +53,7 @@ for j = 1:5
     xlabel('Input value');
 end
 
+figure
 % plot final membership functions
 for j = 1:5
     [x,mf] = plotmf(chkFIS,'input',j);

@@ -89,6 +89,7 @@ anfis_opt = anfisOptions('InitialFIS', sugeno_fis,...          % choose options
 
 % ground truth 
 y_real = data_test(:, end);
+average_y = mean(y_real);
 
 % predict the result
 y_predicted = evalfis(data_test(:,attr), chkFIS);
