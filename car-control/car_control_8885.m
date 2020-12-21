@@ -1,12 +1,18 @@
+%% FUZZY SYSTEMS 2020 - 2021
+% Car Control - Group 1 
+% Stefanos Papadam 
+% AEM: 8885
+
 %% CLEAR 
 clear 
-clc 
+clc
 
 %% INITIALIZATION
-
-% initial position
+% initial coordinates 
 x_initial = 4.1;
 y_initial = 0.3;
+
+% initial orientation 
 thetas = [0 -45 -90];
 
 % initial velocity
@@ -15,7 +21,7 @@ u = 0.05;
 % x position's error 
 error = 0.03; 
 
-% desired position 
+% desired coordinates  
 x_desired = 10; 
 y_desired = 3.2; 
 
@@ -23,12 +29,37 @@ y_desired = 3.2;
 dh = 5 - x_initial;
 dv= y_initial;
 
-% read model
+%% FUZZY MODEL 
+% load model
 %fuzzy_system = readfis('car_fuzzy_controller_8885');
 fuzzy_system = readfis('car_fuzzy_controller_8885_opt');
 
-%% START
+%% PLOT INITIAL FUNCTIONS
+figure;
+plotmf(fuzzy_system, 'input',1);
+title('Membership function of input "dv"');
+xlim([0 1])
+xticks([0 0.5 1]);
 
+figure;
+plotmf(fuzzy_system, 'input',2);
+title('Membership function of input "dh"');
+xlim([0 1])
+xticks([0 0.5 1]);
+
+figure;
+plotmf(fuzzy_system, 'input',3);
+title('Membership function of input "theta"');
+xlim([-180 180])
+xticks([-180 0 180]);
+
+figure;
+plotmf(fuzzy_system, 'output',1);
+title('Membership function of output "dtheta"');
+xlim([-130 130])
+xticks([-130 0 130]);
+
+%% START
 % for each initial state 
 for i = 1:3
     
@@ -96,10 +127,10 @@ for i = 1:3
     end
     
     fprintf('x: %s, y: %s \n',x,y);
-    fprintf('dif_x: %s\n', x - x_desired);
-    fprintf('dif_y: %s\n\n', y - y_desired);
+    fprintf('dif_x: %s\n', ((x - x_desired) / x_desired) * 100);
+    fprintf('dif_y: %s\n\n', ((y - y_desired) / y_desired) * 100);
     
-    figure(i)
+    figure
     hold on
     
     % obstacle plot as rectangles 
@@ -108,6 +139,8 @@ for i = 1:3
     rectangle('Position',[7,0,3,3],'FaceColor',[0.5 0.5 0.5], 'EdgeColor', [0.5 0.5 0.5])
     
     % plot trajectory, final and desired position 
+    title(['Starting angle: ', num2str(thetas(i))]);
+    
     plot(x_values,y_values, 'r')
     plot(x_desired,y_desired,'b*')
     plot(x,y,'r*')
