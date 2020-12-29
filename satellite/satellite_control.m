@@ -1,5 +1,11 @@
-%% Satellite controller 
-%  Stefanos Papadam - 8885
+%% FUZZY SYSTEMS 2020 - 2021
+% Satellite Control - Group 10 
+% Stefanos Papadam 
+% AEM: 8885
+
+%% CLEAR 
+clear 
+clc
 
 %% BEGIN
 % choose zero 
