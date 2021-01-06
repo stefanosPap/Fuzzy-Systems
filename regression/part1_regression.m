@@ -1,36 +1,34 @@
-clear 
+%% FUZZY SYSTEMS 2020 - 2021
+% Regression 
+% Stefanos Papadam 
+% AEM: 8885
 
-%% DATA
+%% CLEAR 
+clear 
+clc
+
+%% DATA PROCESS 
 % load data 
 data = load('airfoil_self_noise.dat');
 
 % split data
 
-% manually split data 
-% dim = size(data);
-% trn_end = round(0.6 * dim(1));
-% val_end = trn_end + round(0.2 * dim(1));
-% 
-% data_trn = data(1:trn_end,:);
-% data_val = data(trn_end + 1:val_end,:);
-% data_test = data(val_end + 1:end,:);
-
-% better spit with implemented function split_data
+% better split with implemented function split_data
 [data_trn, data_val, data_test] = split_scale(data, 1);
  
 y_real = data_test(:, 6);
 
 % calculate average of y in order to use it in SS metric
 average_y = mean(y_real);
-%% TSK models
 
-% save each model to array 'model' in order to access and train it 
-model(1) = genfis1(data_trn, 2, 'gbellmf', 'constant');
-model(2) = genfis1(data_trn, 3, 'gbellmf', 'constant');
-model(3) = genfis1(data_trn, 2, 'gbellmf', 'linear');
-model(4) = genfis1(data_trn, 3, 'gbellmf', 'linear');
+%% TSK MODELS
+% save each model to array 'm' in order to access and train it 
+m(1) = genfis1(data_trn, 2, 'gbellmf', 'constant');
+m(2) = genfis1(data_trn, 3, 'gbellmf', 'constant');
+m(3) = genfis1(data_trn, 2, 'gbellmf', 'linear');
+m(4) = genfis1(data_trn, 3, 'gbellmf', 'linear');
 
-%% Training process
+%% TRAINING PROCESS
 
 MSE = zeros(4,1);
 SStot = zeros(4,1);
@@ -43,9 +41,10 @@ NDEI = zeros(4,1);
 for i = 1:4
     tic
     % train 
-    options = anfisOptions('InitialFIS', model(i), 'EpochNumber', 100, 'DisplayANFISInformation', 0, 'DisplayErrorValues', 0, 'ValidationData', data_val);
+    options = anfisOptions('InitialFIS', m(i), 'EpochNumber', 100, 'DisplayANFISInformation', 0, 'DisplayErrorValues', 0, 'ValidationData', data_val);
     [fis,trainError,stepSize,chkFIS,testError] = anfis(data_trn, options); 
-    
+    %[fis,trainError,stepSize,chkFIS,testError] = anfis(data_trn, model(i), [100, 0], 0, valData);
+
     % predict the result
     y_predicted = evalfis(data_test(:,1:5), chkFIS);
 
@@ -86,7 +85,7 @@ for i = 1:4
     epochs = 1:length(trainError);
     plot(epochs, trainError);
     plot(epochs, testError);
-    title(['Learning curves for model ' num2str(i)]) 
+    title(['Learning curves - Model ' num2str(i)]) 
     xlabel('epochs')
     ylabel('MSE')
     legend('MSE for Training data','MSE for Testing data')
@@ -99,7 +98,7 @@ for i = 1:4
     plot(samples_length, error);
     xlabel('sample')
     ylabel('Error')
-    title(['Prediction error for model ' num2str(i)]) 
+    title(['Prediction error - Model ' num2str(i)]) 
 
 end
     

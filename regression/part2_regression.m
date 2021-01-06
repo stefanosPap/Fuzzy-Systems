@@ -1,3 +1,7 @@
+%% FUZZY SYSTEMS 2020 - 2021
+% Regression 
+% Stefanos Papadam 
+% AEM: 8885
 
 %% DATA
 tic
@@ -7,8 +11,10 @@ data = table2array(readtable('train.csv'));
 % split data 
 [data_trn, data_val, data_test] = split_scale(data, 1);
 
-features_number = [4, 6, 9 , 12];
-cluster_radius = [0.2, 0.3 0.4 0.5];
+% specify features number and cluster radius in two arrays 
+features_number = [4, 6, 9 , 15];
+cluster_radius = [0.2, 0.4, 0.6, 0.8];
+
 % 5-fold cross validation 
 n = length(data_trn);
 k = 5;
@@ -26,7 +32,7 @@ fold = 5;                               % 5-fold
 rules = zeros(length(features_number),length(cluster_radius));
 comb_errors = zeros(length(features_number),length(cluster_radius));
 
-% grid search
+%% GRID SEARCH
 for f = 1:length(features_number)       % examine every combination between features number and cluster radius 
     f
     features = idx(1:features_number(f));
@@ -65,6 +71,7 @@ for f = 1:length(features_number)       % examine every combination between feat
     end
 end
 
+%% OPTIMAL 
 % find minimum error 
 minimum_error = min(comb_errors(:));
 

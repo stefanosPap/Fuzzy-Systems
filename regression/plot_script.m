@@ -6,7 +6,7 @@ zlabel('MSE');
 ylabel('Number of feature');
 xlabel('Radius values');
 yticklabels({'3','9','15','21'});
-xticklabels({'1st','2nd','3rd','4th'});
+xticklabels({'0.2','0.4','0.6','0.8'});
 
 figure
 % 3-d bar plot rules, number of features and claster radius
@@ -16,7 +16,7 @@ zlabel('Number of rules');
 ylabel('Number of feature');
 xlabel('Radius values');
 yticklabels({'3','9','15','21'});
-xticklabels({'1st','2nd','3rd','4th'});
+xticklabels({'0.2','0.4','0.6','0.8'});
 
 % plot training and validation error
 figure
