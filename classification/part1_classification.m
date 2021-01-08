@@ -55,22 +55,33 @@ percent4 = count2 / count1 * 100;
 
 cluster_radius = [0.2, 0.6];
 
+% m(1) and m(2) are class independent 
 m(1) = genfis2(training_data(:,1:3), training_data(:,4), cluster_radius(1));
 for i=1:length(m(1).output(1).mf(:))
     m(1).output(1).mf(i).type='constant'; 
     m(1).output(1).mf(i).params = m(1).output(1).mf(i).params(end); 
 end
+m(1).name = 'model1';
 
 m(2) = genfis2(training_data(:,1:3), training_data(:,4), cluster_radius(2));
 for i=1:length(m(2).output(1).mf(:))
     m(2).output(1).mf(i).type='constant'; 
     m(2).output(1).mf(i).params = m(2).output(1).mf(i).params(end); 
 end
+m(2).name = 'model2';
+
+% m(3) and m(4) are class dependent 
+% classDep1 is a function based on the implemented 'TSK_classification.m'
+m(3) = classDep1(training_data, cluster_radius(1));
+m(3).name = 'model3';
+
+m(4) = classDep1(training_data, cluster_radius(2));
+m(4).name = 'model4';
 
 %% TRAINING PROCESS
 N = length(testing_data);
 
-for i = 1:2
+for i = 1:4
     % train 
     options = anfisOptions('InitialFIS', m(i), 'EpochNumber', 100, 'InitialStepSize', 0.05, 'ValidationData', validation_data);
     [fis,trainError,stepSize,chkFIS,testError] = anfis(training_data, options); 
@@ -80,22 +91,23 @@ for i = 1:2
     y_predicted = round(y_predicted);
 
     % calculate error matrix 
-    error_matrix = zeros(2);
-    for j = 1:length(testing_data)
-        if testing_data(j,4) == y_predicted(j)
-            if testing_data(j,4) == 1
-                error_matrix(1,1) = error_matrix(1,1) + 1; 
-            elseif testing_data(j,4) == 2
-                error_matrix(2,2) = error_matrix(2,2) + 1; 
-            end
-        else
-            if testing_data(j,4) == 1
-               error_matrix(2,1) = error_matrix(2,1) + 1; 
-            elseif testing_data(j,4) == 2
-               error_matrix(1,2) = error_matrix(1,2) + 1; 
-            end
-        end
-    end
+%    error_matrix = zeros(2);
+%     for j = 1:length(testing_data)
+%         if testing_data(j,4) == y_predicted(j)
+%             if testing_data(j,4) == 1
+%                 error_matrix(1,1) = error_matrix(1,1) + 1; 
+%             elseif testing_data(j,4) == 2
+%                 error_matrix(2,2) = error_matrix(2,2) + 1; 
+%             end
+%         else
+%             if testing_data(j,4) == 1
+%                error_matrix(2,1) = error_matrix(2,1) + 1; 
+%             elseif testing_data(j,4) == 2
+%                error_matrix(1,2) = error_matrix(1,2) + 1; 
+%             end
+%         end
+%     end
+    error_matrix = confusionmat(testing_data(:,4) ,y_predicted)';
     % calculate OA metric
     OA(i) = sum(diag(error_matrix)) / N;
     
@@ -139,6 +151,7 @@ for i = 1:2
     legend('MSE for Training data','MSE for Testing data')
     hold off 
     
+     mfedit(fis)
 %     inputs = 3;
 %     result = y_predicted;
 %     k = zeros(max(testing_data(:,inputs+1)));
