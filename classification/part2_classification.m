@@ -13,7 +13,12 @@ tic
 data = csvread('data.csv',1,1, [1, 1, 11500, 179]);
 
 % split data 
-[training_data, validation_data, testing_data] = split_scale(data, 1);
+[train_split, val_split, test_split] = dividerand(length(data), 0.6, 0.2, 0.2);
+
+% specify training, testing and validation data 
+training_data = data(train_split, :);
+validation_data = data(val_split, :);
+testing_data = data(test_split, :);
 
 % shuffle the data 
 training_data = training_data(randperm(length(training_data)), :);
@@ -21,8 +26,8 @@ validation_data = validation_data(randperm(length(validation_data)), :);
 testing_data = testing_data(randperm(length(testing_data)), :);
 
 % specify features number and cluster radius in two arrays 
-features_number = [4]%, 6, 9 , 15];
-cluster_radius = [0.2]%, 0.4, 0.6, 0.8];
+features_number = [6, 10, 15, 20];
+cluster_radius = [0.15, 0.3, 0.45, 0.6];
 
 % 5-fold cross validation 
 n = length(training_data);
@@ -43,7 +48,7 @@ comb_errors = zeros(length(features_number),length(cluster_radius));
 
 %% GRID SEARCH
 N = length(testing_data);
-
+tic 
 for f = 1:length(features_number)       % examine every combination between features number and cluster radius 
     f
     features = idx(1:features_number(f));
@@ -65,10 +70,17 @@ for f = 1:length(features_number)       % examine every combination between feat
             val_y = training_data(test_idx, end);
             val = [val_x, val_y];
             
-            fis = classDep2(train, cluster_radius(r));
+            initial_fis = genfis2(training_data(trn_idx==1,features),training_data(trn_idx==1,179), cluster_radius(r));
+            rules = length(initial_fis.rule);
+            for t=1:rules
+               initial_fis.output(1).mf(t).type='constant'; 
+               initial_fis.output(1).mf(t).params = initial_fis.output(1).mf(t).params(end); 
+            end
+             
+%            fis = classDep2(train, cluster_radius(r));
 
-            anfis_opt = anfisOptions('InitialFIS', fis,...          % choose options 
-                                     'EpochNumber', 50,...
+            anfis_opt = anfisOptions('InitialFIS', initial_fis,...          % choose options 
+                                     'EpochNumber', 1,...
                                      'InitialStepSize', 0.1,...
                                      'DisplayANFISInformation', 0,...
                                      'DisplayErrorValues', 0,...
@@ -76,14 +88,15 @@ for f = 1:length(features_number)       % examine every combination between feat
                                      'DisplayFinalResults', 0,...
                                      'ValidationData', val);
             % train                      
-            [fis,trainError,stepSize,chkFIS,testError] = anfis(train, anfis_opt);
+            [initial_fis,trainError,stepSize,chkFIS,testError] = anfis(train, anfis_opt);
             errors(k) = min(testError);
         end
-        rules(f, r) = length(fis.rule);
+        rules(f, r) = length(initial_fis.rule);
         comb_errors(f, r) = sum(errors) / fold; % divide with fold = 5 in order to take the mean 
 
     end
 end
+toc
 %% OPTIMAL 
 % find minimum error 
 minimum_error = min(comb_errors(:));
@@ -96,16 +109,21 @@ attr = idx(1:features_number(features));
 
 % optimal model
 train = [training_data(:, attr), training_data(:, end)];
-fis = classDep2(train, cluster_radius(radius));
-
-anfis_opt = anfisOptions('InitialFIS', fis,...
+initial_fis = classDep2(train, cluster_radius(radius));
+% initial_fis = genfis2(training_data(:, attr), training_data(:, end), cluster_radius(r));
+% nuofrules = length(initial_fis.rule);
+% for t=1:nuofrules
+%     initial_fis.output(1).mf(t).type='constant'; 
+%     initial_fis.output(1).mf(t).params = initial_fis.output(1).mf(t).params(end); 
+% end
+anfis_opt = anfisOptions('InitialFIS', initial_fis,...
                          'EpochNumber', 100,...
                          'InitialStepSize', 0.05,...
                          'DisplayANFISInformation', 0,...
                          'DisplayErrorValues', 0,...
                          'DisplayStepSize', 0,...
                          'DisplayFinalResults', 0,...
-                         'ValidationData', val);
+                         'ValidationData',  validation_data(:,[attr, end]));
 % train optimal model                      
 [fis,trainError,stepSize,chkFIS,testError] = anfis(train, anfis_opt);
 

@@ -91,22 +91,6 @@ for i = 1:4
     y_predicted = round(y_predicted);
 
     % calculate error matrix 
-%    error_matrix = zeros(2);
-%     for j = 1:length(testing_data)
-%         if testing_data(j,4) == y_predicted(j)
-%             if testing_data(j,4) == 1
-%                 error_matrix(1,1) = error_matrix(1,1) + 1; 
-%             elseif testing_data(j,4) == 2
-%                 error_matrix(2,2) = error_matrix(2,2) + 1; 
-%             end
-%         else
-%             if testing_data(j,4) == 1
-%                error_matrix(2,1) = error_matrix(2,1) + 1; 
-%             elseif testing_data(j,4) == 2
-%                error_matrix(1,2) = error_matrix(1,2) + 1; 
-%             end
-%         end
-%     end
     error_matrix = confusionmat(testing_data(:,4) ,y_predicted)';
     % calculate OA metric
     OA(i) = sum(diag(error_matrix)) / N;
@@ -151,30 +135,6 @@ for i = 1:4
     legend('MSE for Training data','MSE for Testing data')
     hold off 
     
-     mfedit(fis)
-%     inputs = 3;
-%     result = y_predicted;
-%     k = zeros(max(testing_data(:,inputs+1)));
-%     checkLength = length(testing_data);
-%     for q=1:checkLength
-%         horizontal = result(q);
-%         if horizontal < 1
-%             horizontal = 1;
-%         elseif horizontal > max(size(k))
-%             horizontal = max(size(k));
-%         end
-%         vertical = testing_data(q, inputs+1);
-%         k(horizontal,vertical) = k(horizontal,vertical) + 1;
-%     end
-%     
-%     OA_(i) = sum(diag(k))/N;
-%     p = 0;
-%     for q=1:max(size(k))
-%         PA_(i,q) = k(q,q)/sum(k(:,q));
-%         UA_(i,q) = k(q,q)/sum(k(q,:));
-%         p = p + sum(k(:,q))*sum(k(q,:));
-%     end
-%     
-%     kest(i) = (N*sum(diag(k))-p)/(N^2-p);
-    
+    mfedit(fis)
+    writefis(chkFIS, ['fis', num2str(i)])    
 end

@@ -5,8 +5,8 @@ title('Error for different number of features and cluster radius');
 zlabel('MSE');
 ylabel('Number of feature');
 xlabel('Radius values');
-yticklabels({'3','9','15','21'});
-xticklabels({'0.2','0.4','0.6','0.8'});
+yticklabels({'6', '10', '15', '20'});
+xticklabels({'0.15', '0.3', '0.45', '0.6'});
 
 figure
 % 3-d bar plot rules, number of features and claster radius
@@ -15,8 +15,8 @@ title('Rules for different number of features and cluster radius');
 zlabel('Number of rules');
 ylabel('Number of feature');
 xlabel('Radius values');
-yticklabels({'3','9','15','21'});
-xticklabels({'0.2','0.4','0.6','0.8'});
+yticklabels({'6', '10', '15', '20'});
+xticklabels({'0.15', '0.3', '0.45', '0.6'});
 
 % plot training and validation error
 figure
@@ -45,8 +45,8 @@ hold off
 
 figure
 % plot initial membership functions
-for j = 1:4
-    [x,mf] = plotmf(fis,'input',j);
+for j = 1:6
+    [x,mf] = plotmf(initial_fis,'input',j);
     subplot(2,3,j)
     plot(x,mf);
     title(['Input ' num2str(j)])
@@ -56,7 +56,7 @@ end
 
 figure
 % plot final membership functions
-for j = 1:4
+for j = 1:6
     [x,mf] = plotmf(chkFIS,'input',j);
     subplot(2,3,j)
     plot(x,mf);

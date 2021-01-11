@@ -1,28 +1,3 @@
-% output1_tr_idx = (training_data(:,4)==1);
-% output2_tr_idx = (training_data(:,4)==2);
-% 
-% output1_tr = training_data(output1_tr_idx,:);
-% output2_tr = training_data(output2_tr_idx,:);
-% 
-% [clusters1,sigma1]=subclust(output1_tr,0.5);
-% [clusters2,sigma2]=subclust(output2_tr,0.5);
-% size_c1 = size(clusters1,1);
-% size_c2 = size(clusters2,1);
-% 
-% initial_fis = newfis('initial_fis', 'sugeno');
-% 
-% initial_fis = addvar(initial_fis, 'output', 'output1', [1, 2]);
-% for i = 1:3
-%     min_bound = min(training_data(:,i));
-%     max_bound = max(training_data(:,i));
-%     initial_fis = addvar(initial_fis, 'input', ['input', num2str(i)], [min_bound, max_bound]);
-%     for j=1:size_c1
-%         initial_fis=addmf(initial_fis,'input',i,'mf','gaussmf',[sigma1(i) clusters1(j,i)]);
-%     end
-%     for k=1:size_c2
-%         initial_fis=addmf(initial_fis,'input',i,'mf','gaussmf',[sigma2(i) clusters2(k,i)]);
-%     end
-% end
 function fis = classDep1(training_data, radius)
     %%Clustering Per Class
     [c1,sig1]=subclust(training_data(training_data(:,end)==1,:),radius);
